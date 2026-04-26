@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.layout-fixer" path="/org/gnome/shell/extensions/layout-fixer/">
+    <key name="shortcut-key" type="as">
+      <default><![CDATA[['<Alt>a']]]></default>
+      <summary>Shortcut to fix layout</summary>
+    </key>
+  </schema>
+</schemalist>

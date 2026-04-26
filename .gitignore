@@ -1,0 +1,13 @@
+build_temp/
+*.zip
+*.tar.xz
+schemas/gschemas.compiled
+.vscode/
+.idea/
+*.swp
+*~
+.kate-swp
+.DS_Store
+.directory
+Thumbs.db
+*.log

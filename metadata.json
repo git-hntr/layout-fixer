@@ -1,0 +1,8 @@
+{
+  "name": "Layout Fixer",
+	"description": "Instantly corrects text typed in the wrong keyboard layout (EN/UA). Uses native GNOME APIs to transliterate and replace selected text via a customizable shortcut. Designed specifically for Wayland.",
+  "uuid": "layout-fixer@hntr",
+  "shell-version": ["50"],
+  "version": 1,
+  "url": "https://github.com/git-hntr/layout-fixer"
+}
