@@ -14,6 +14,7 @@ export default class LayoutFixer extends Extension {
         this._settings = this.getSettings('org.gnome.shell.extensions.layout-fixer');
         let backend = Clutter.get_default_backend();
         this._keyboard = backend.get_default_seat().create_virtual_device(Clutter.InputDeviceType.KEYBOARD_DEVICE);
+        this._timeoutIds = new Set();
 
         Main.wm.addKeybinding(
             'shortcut-key',
@@ -26,21 +27,39 @@ export default class LayoutFixer extends Extension {
 
     disable() {
         Main.wm.removeKeybinding('shortcut-key');
+
+        if (this._timeoutIds) {
+            for (let id of this._timeoutIds) {
+                GLib.source_remove(id);
+            }
+            this._timeoutIds.clear();
+        }
+
         this._settings = null;
         this._keyboard = null;
+        this._timeoutIds = null;
+    }
+
+    _addTimeout(interval, func) {
+        let id = GLib.timeout_add(GLib.PRIORITY_DEFAULT, interval, () => {
+            this._timeoutIds.delete(id);
+            return func();
+        });
+        this._timeoutIds.add(id);
+        return id;
     }
 
     _fixLayout() {
         let clipboard = St.Clipboard.get_default();
         
         clipboard.get_text(St.ClipboardType.CLIPBOARD, (clip, oldClipboardText) => {
-            GLib.timeout_add(GLib.PRIORITY_DEFAULT, 250, () => {
+            this._addTimeout(250, () => {
                 this._emitKey(Clutter.KEY_Control_L, true);
                 this._emitKey(Clutter.KEY_c, true);
                 this._emitKey(Clutter.KEY_c, false);
                 this._emitKey(Clutter.KEY_Control_L, false);
 
-                GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+                this._addTimeout(100, () => {
                     clipboard.get_text(St.ClipboardType.CLIPBOARD, (clip, text1) => {
                         let isEditorEmptyCopy = text1 && (text1.endsWith('\n') || text1.endsWith('\r\n'));
                         
@@ -49,7 +68,7 @@ export default class LayoutFixer extends Extension {
                         } else {
                             clipboard.set_text(St.ClipboardType.CLIPBOARD, oldClipboardText || "");
 
-                            GLib.timeout_add(GLib.PRIORITY_DEFAULT, 50, () => {
+                            this._addTimeout(50, () => {
                                 this._emitKey(Clutter.KEY_Control_L, true);
                                 this._emitKey(Clutter.KEY_Shift_L, true);
                                 this._emitKey(Clutter.KEY_Left, true);
@@ -57,13 +76,13 @@ export default class LayoutFixer extends Extension {
                                 this._emitKey(Clutter.KEY_Shift_L, false);
                                 this._emitKey(Clutter.KEY_Control_L, false);
 
-                                GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+                                this._addTimeout(100, () => {
                                     this._emitKey(Clutter.KEY_Control_L, true);
                                     this._emitKey(Clutter.KEY_c, true);
                                     this._emitKey(Clutter.KEY_c, false);
                                     this._emitKey(Clutter.KEY_Control_L, false);
 
-                                    GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+                                    this._addTimeout(100, () => {
                                         clipboard.get_text(St.ClipboardType.CLIPBOARD, (clip, text2) => {
                                             if (text2 && text2 !== oldClipboardText) {
                                                 this._transliterateAndPaste(text2, oldClipboardText, clipboard);
@@ -100,13 +119,13 @@ export default class LayoutFixer extends Extension {
 
         clipboard.set_text(St.ClipboardType.CLIPBOARD, converted);
         
-        GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+        this._addTimeout(100, () => {
             this._emitKey(Clutter.KEY_Control_L, true);
             this._emitKey(Clutter.KEY_v, true);
             this._emitKey(Clutter.KEY_v, false);
             this._emitKey(Clutter.KEY_Control_L, false);
 
-            GLib.timeout_add(GLib.PRIORITY_DEFAULT, 400, () => {
+            this._addTimeout(400, () => {
                 if (oldClipboardText) {
                     clipboard.set_text(St.ClipboardType.CLIPBOARD, oldClipboardText);
                 }
