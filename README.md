@@ -15,7 +15,7 @@
 ## 📦 Compatibility
 
 * GNOME Shell: **50**
-* Session: **Wayland** (X11 is supported but optimized for Wayland architecture).
+* Session: **Wayland**
 
 ## 🛠️ Installation
 
