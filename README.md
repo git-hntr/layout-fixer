@@ -21,7 +21,7 @@
 ### Extension Manager (Recommended)
 
 The easiest way to browse, install, and manage **Layout Fixer** (and other extensions)
-without a web browser is by using [Extension Manager](https://mattjakeman.com/apps/extension-manager).
+without a web browser is using [Extension Manager](https://mattjakeman.com/apps/extension-manager).
 
 1. Install Extension Manager via Flatpak or your package manager:
    ```bash
