@@ -63,7 +63,9 @@ export default class LayoutFixer extends Extension {
 
         if (this._isProcessing) return;
         this._isProcessing = true;
-
+											// [EGO Review Note]: Clipboard access is required to read the selected text
+							        // (via simulated Ctrl+C) and replace it with the transliterated version.
+							        // It is only triggered manually by the user via the custom shortcut.
         let clipboard = St.Clipboard.get_default();
         
         clipboard.get_text(St.ClipboardType.CLIPBOARD, (clip, oldClipboardText) => {
